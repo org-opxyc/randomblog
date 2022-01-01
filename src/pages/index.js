@@ -1,34 +1,18 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { graphql } from 'gatsby'
 
 import Layout from '../components/layout'
 import Hero from '../components/hero'
 import ArticlePreview from '../components/article-preview'
-
-import getCookie from '../utils/getcookie'
-import RedirectionInfo from '../components/redirection-info'
-
-const COOKIE_NAME = '_redirect_to'
-const SESSION_STORAGE_KEY = '_redirected'
+import Redirection from '../components/Redirection'
 
 export default function Root({ data }) {
-  // redirect to appripariate page
-  const [redir, setRedir] = useState(false)
-
-  const redirected = sessionStorage.getItem(SESSION_STORAGE_KEY)
-  let redirect_to = getCookie(COOKIE_NAME)
-  
-  if (redirected === null && redirect_to !== '') {
-    setRedir(true)
-    sessionStorage.setItem(SESSION_STORAGE_KEY, true)
-    document.cookie = COOKIE_NAME + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-    window.location.href = redirect_to
-  }
-
   const posts = data.allContentfulBlogPost.nodes
   const [author] = data.allContentfulPerson.nodes
 
   return (
+    <>
+    <Redirection />
     <Layout>
       <Hero
         image={author.heroImage.gatsbyImageData}
@@ -36,9 +20,8 @@ export default function Root({ data }) {
         content={author.shortBio.shortBio}
       />
       <ArticlePreview posts={posts} />
-
-      {redir ? <RedirectionInfo /> : null}
     </Layout>
+    </>
   )
 }
 
