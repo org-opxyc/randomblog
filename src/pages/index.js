@@ -1,30 +1,46 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { graphql } from 'gatsby'
-import get from 'lodash/get'
 
 import Layout from '../components/layout'
 import Hero from '../components/hero'
 import ArticlePreview from '../components/article-preview'
 
-class RootIndex extends React.Component {
-  render() {
-    const posts = get(this, 'props.data.allContentfulBlogPost.nodes')
-    const [author] = get(this, 'props.data.allContentfulPerson.nodes')
+import getCookie from '../utils/getcookie'
+import RedirectionInfo from '../components/redirection-info'
 
-    return (
-      <Layout location={this.props.location}>
-        <Hero
-          image={author.heroImage.gatsbyImageData}
-          title={author.name}
-          content={author.shortBio.shortBio}
-        />
-        <ArticlePreview posts={posts} />
-      </Layout>
-    )
+const COOKIE_NAME = '_redirect_to'
+const SESSION_STORAGE_KEY = '_redirected'
+
+export default function Root({ data }) {
+  // redirect to appripariate page
+  const [redir, setRedir] = useState(false)
+
+  const redirected = sessionStorage.getItem(SESSION_STORAGE_KEY)
+  let redirect_to = getCookie(COOKIE_NAME)
+  
+  if (redirected === null && redirect_to !== '') {
+    setRedir(true)
+    sessionStorage.setItem(SESSION_STORAGE_KEY, true)
+    document.cookie = COOKIE_NAME + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+    window.location.href = redirect_to
   }
-}
 
-export default RootIndex
+  const posts = data.allContentfulBlogPost.nodes
+  const [author] = data.allContentfulPerson.nodes
+
+  return (
+    <Layout>
+      <Hero
+        image={author.heroImage.gatsbyImageData}
+        title={author.name}
+        content={author.shortBio.shortBio}
+      />
+      <ArticlePreview posts={posts} />
+
+      {redir ? <RedirectionInfo /> : null}
+    </Layout>
+  )
+}
 
 export const pageQuery = graphql`
   query HomeQuery {
