@@ -14,12 +14,16 @@ export default function Redirection() {
 
         if (redirected === null && redirect_to !== '') {
             setRedir(true)
-            sessionStorage.setItem(SESSION_STORAGE_KEY, true)
-            // document.cookie =
-            // COOKIE_NAME + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-            window.location.href = redirect_to
+            let timer = setTimeout(() => {
+                sessionStorage.setItem(SESSION_STORAGE_KEY, true)
+                // document.cookie = COOKIE_NAME + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+                window.location.href = redirect_to
+            }, 1000);
+            return () => {
+                clearTimeout(timer);
+            };
         }
-    })
+    }, [])
 
     return <>{redir ? <RedirectionInfo /> : null}</>
 }
