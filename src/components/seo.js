@@ -69,7 +69,9 @@ const Seo = ({ description = '', lang = 'en', meta = [], title, image }) => {
           content: metaDescription,
         },
       ].concat(meta)}
-    />
+    >
+      <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/25431987.js"></script>
+    </Helmet>
   )
 }
 
